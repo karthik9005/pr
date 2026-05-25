@@ -1,0 +1,50 @@
+-- 1. Resource settings
+SET memory_limit = '8GB';
+SET temp_directory = 'E:/duckdb_temp/';
+SET max_temp_directory_size = '100GB';
+SET threads = 4;
+
+-- 2. Verify settings
+SELECT 
+    name,
+    value
+FROM duckdb_settings()
+WHERE name IN (
+    'memory_limit',
+    'threads',
+    'temp_directory',
+    'max_temp_directory_size'
+)
+ORDER BY name;
+
+-- 3. Import source CSV
+CREATE OR REPLACE TABLE source_data AS
+SELECT *
+FROM read_csv(
+    'F:/input_files/source.csv',
+    header = true,
+    all_varchar = true,
+    ignore_errors = false
+);
+
+-- 4. Import target CSV
+CREATE OR REPLACE TABLE target_data AS
+SELECT *
+FROM read_csv(
+    'F:/input_files/target.csv',
+    header = true,
+    all_varchar = true,
+    ignore_errors = false
+);
+
+-- 5. Validate row counts
+SELECT COUNT(*) AS source_count FROM source_data;
+SELECT COUNT(*) AS target_count FROM target_data;
+
+-- 6. Check table structure
+DESCRIBE source_data;
+DESCRIBE target_data;
+
+-- 7. Preview data
+SELECT * FROM source_data LIMIT 10;
+SELECT * FROM target_data LIMIT 10;
